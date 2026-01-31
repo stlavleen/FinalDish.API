@@ -1,0 +1,6 @@
+@FinalDish.API_HostAddress = http://localhost:5155
+
+GET {{FinalDish.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
