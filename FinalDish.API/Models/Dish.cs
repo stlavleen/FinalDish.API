@@ -12,9 +12,8 @@ namespace FinalDish.API.Models
         public string Name { get; set; } = null!;
 
         [Required]
-        public string Content { get; set; } = null!;
-
-        [Required]
         public DishType Type { get; set; }
+
+        public ICollection<Dishes_Ingredients>? Dishes_Ingredients { get; set; }
     }
 }

@@ -12,5 +12,7 @@ namespace FinalDish.API.Models
 
         [Required]
         public string Name { get; set; } = null!;
+
+        public ICollection<Dishes_Ingredients>? Dishes_Ingredients { get; set; }
     }
 }
