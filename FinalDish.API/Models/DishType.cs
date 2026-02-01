@@ -1,12 +1,17 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace FinalDish.API.Models
 {
-    public enum DishType
+    public class DishType
     {
-        HotDish,
-        Soup,
-        ColdDish,
-        Dessert,
-        Sauce
+        [Key]
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; } = null!;
+
+        public ICollection<Dish>? Dishes { get; set; }
     }
 }

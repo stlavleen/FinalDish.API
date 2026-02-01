@@ -28,9 +28,16 @@ namespace FinalDish.API.Models
                 .HasForeignKey(x => x.IngredientId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DishType>()
+                .HasMany(x => x.Dishes)
+                .WithOne(x => x.Type)
+                .HasForeignKey(x => x.DishTypeId)
+                .IsRequired();
         }
 
         public DbSet<Dish> Dishes => Set<Dish>();
+        public DbSet<DishType> DishTypes => Set<DishType>();
         public DbSet<Ingredient> Ingredients => Set<Ingredient>();
         public DbSet<Dishes_Ingredients> Dishes_Ingredients => Set<Dishes_Ingredients>();
     }
