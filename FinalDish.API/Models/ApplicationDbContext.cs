@@ -9,5 +9,6 @@ namespace FinalDish.API.Models
         }
 
         public DbSet<Dish> Dishes => Set<Dish>();
+        public DbSet<Ingredient> Ingredients => Set<Ingredient>();
     }
 }

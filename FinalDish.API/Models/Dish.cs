@@ -11,8 +11,6 @@ namespace FinalDish.API.Models
         [Required]
         public string Name { get; set; } = null!;
 
-        public string? Description { get; set; }
-
         [Required]
         public string Content { get; set; } = null!;
 

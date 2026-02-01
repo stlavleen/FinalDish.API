@@ -1,4 +1,5 @@
-﻿namespace FinalDish.API.Models
+﻿
+namespace FinalDish.API.Models
 {
     public enum DishType
     {
