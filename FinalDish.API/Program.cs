@@ -1,5 +1,7 @@
 
+using FinalDish.API.Constants;
 using FinalDish.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalDish.API
@@ -12,7 +14,11 @@ namespace FinalDish.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options => 
+            {
+                options.CacheProfiles.Add(CacheProfilesNames.MaxAge300, new CacheProfile { Duration = 300 });
+                options.CacheProfiles.Add(CacheProfilesNames.NoStore, new CacheProfile { NoStore = true });
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

@@ -1,4 +1,5 @@
 ﻿
+using FinalDish.API.Constants;
 using FinalDish.API.DTO;
 using FinalDish.API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace FinalDish.API.Controllers
         }
 
         [HttpGet("GetRange")]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.MaxAge300)]
         public async Task<DishType[]> Get([FromQuery] RangeRequestDTO data) 
         {
             return await context.DishTypes
