@@ -36,6 +36,7 @@ namespace FinalDish.API.Controllers
                     IngredientId = data.IngredientId
                 };
                 await context.Dishes_Ingredients.AddAsync(entity);
+                await context.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status201Created, 
                     $"Ingredient with id = {data.IngredientId} has been added to dish with id = {data.DishId}.");
@@ -62,6 +63,7 @@ namespace FinalDish.API.Controllers
                 if (entity is not null)
                 {
                     var entry = context.Dishes_Ingredients.Remove(entity);
+                    await context.SaveChangesAsync();
 
                     return StatusCode(StatusCodes.Status200OK, 
                         $"Ingredient with id = {data.IngredientId} has been removed from dish with id = {data.DishId}.");

@@ -37,6 +37,8 @@ namespace FinalDish.API.Controllers
                     DishTypeId = data.DishTypeId
                 };
                 var entry = await context.Dishes.AddAsync(dish);
+                await context.SaveChangesAsync();
+
                 return StatusCode(StatusCodes.Status201Created,
                     new JsonResult(new 
                     {
@@ -95,6 +97,7 @@ namespace FinalDish.API.Controllers
                 if (entity is not null)
                 {
                     var entry = context.Dishes.Remove(entity);
+                    await context.SaveChangesAsync();
 
                     return StatusCode(StatusCodes.Status200OK, $"Dish with id = {id} has been removed.");
                 }
