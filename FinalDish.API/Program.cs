@@ -1,6 +1,7 @@
 
 using FinalDish.API.Constants;
 using FinalDish.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,15 @@ namespace FinalDish.API
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options => 
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 10;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             var app = builder.Build();
 
