@@ -14,13 +14,13 @@ namespace FinalDish.API.Controllers
     public class UserAccountController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        private readonly ConfigurationManager configuration;
+        private readonly IConfiguration configuration;
         private readonly SignInManager<AppUser> signInManager;
         private readonly UserManager<AppUser> userManager;
 
         public UserAccountController
             (ApplicationDbContext context,
-            ConfigurationManager configuration,
+            IConfiguration configuration,
             SignInManager<AppUser> signInManager, 
             UserManager<AppUser> userManager)
         {
@@ -44,11 +44,11 @@ namespace FinalDish.API.Controllers
             if (result.Succeeded)
                 return StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
             else
-                return Problem(string.Join(" ", result.Errors), null, StatusCodes.Status500InternalServerError);
+                return Problem(string.Join(" ", result.Errors.Select(x => x.Description)), null, StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(RegistrationDTO data)
+        public async Task<IActionResult> Login(LoginDTO data)
         {
             var user = await userManager.FindByNameAsync(data.Name);
 
