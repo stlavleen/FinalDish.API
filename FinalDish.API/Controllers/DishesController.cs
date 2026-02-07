@@ -2,6 +2,7 @@
 using FinalDish.API.Constants;
 using FinalDish.API.DTO;
 using FinalDish.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,7 @@ namespace FinalDish.API.Controllers
                 .ToArrayAsync();
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post(DishDTO data) 
         {
@@ -58,6 +60,7 @@ namespace FinalDish.API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Put(int id, DishDTO data)
         {
@@ -89,6 +92,7 @@ namespace FinalDish.API.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id) 
         {

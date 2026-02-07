@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 namespace FinalDish.API
 {
@@ -66,7 +67,15 @@ namespace FinalDish.API
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddAuthentication(options => 
+                {
+                    options.DefaultAuthenticateScheme = 
+                    options.DefaultChallengeScheme =
+                    options.DefaultForbidScheme =
+                    options.DefaultScheme =
+                    options.DefaultSignInScheme =
+                    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme; 
+                })
                 .AddJwtBearer(options => 
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
