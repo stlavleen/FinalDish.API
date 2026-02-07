@@ -1,4 +1,5 @@
 ﻿
+using FinalDish.API.Constants;
 using FinalDish.API.DTO;
 using FinalDish.API.Models;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +32,7 @@ namespace FinalDish.API.Controllers
         }
 
         [HttpPost]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Register(RegistrationDTO data) 
         {
             var user = new AppUser 
@@ -48,6 +50,7 @@ namespace FinalDish.API.Controllers
         }
 
         [HttpPost]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Login(LoginDTO data)
         {
             var user = await userManager.FindByNameAsync(data.Name);
