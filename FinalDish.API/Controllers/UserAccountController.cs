@@ -18,17 +18,20 @@ namespace FinalDish.API.Controllers
         private readonly IConfiguration configuration;
         private readonly SignInManager<AppUser> signInManager;
         private readonly UserManager<AppUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         public UserAccountController
             (ApplicationDbContext context,
             IConfiguration configuration,
             SignInManager<AppUser> signInManager, 
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             this.context = context;
+            this.configuration = configuration;
             this.signInManager = signInManager;
             this.userManager = userManager;
-            this.configuration = configuration;
+            this.roleManager = roleManager;
         }
 
         [HttpPost]
