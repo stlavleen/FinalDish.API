@@ -5,7 +5,7 @@
         public const string Moderator = "Moderator";
         public const string Admin = "Administrator";
 
-        private static string[] content =
+        private static HashSet<string> content =
         [
             Moderator,
             Admin
