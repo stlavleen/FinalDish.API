@@ -4,6 +4,7 @@ using FinalDish.API.DTO;
 using FinalDish.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,30 +15,24 @@ namespace FinalDish.API.Controllers
     [ApiController]
     public class UserAccountController : ControllerBase
     {
-        private readonly ApplicationDbContext context;
         private readonly IConfiguration configuration;
-        private readonly SignInManager<AppUser> signInManager;
         private readonly UserManager<AppUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
 
         public UserAccountController
-            (ApplicationDbContext context,
-            IConfiguration configuration,
-            SignInManager<AppUser> signInManager, 
-            UserManager<AppUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            (IConfiguration configuration,
+            UserManager<AppUser> userManager)
         {
-            this.context = context;
             this.configuration = configuration;
-            this.signInManager = signInManager;
             this.userManager = userManager;
-            this.roleManager = roleManager;
         }
 
         [HttpPost]
         [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Register(RegistrationDTO data) 
         {
+            if (data.Role is not null && !RolesNames.Content.Contains(data.Role))
+                return Problem("User is not created. Unknown role.", null, StatusCodes.Status500InternalServerError);
+
             var user = new AppUser 
             {
                 UserName = data.Name,
@@ -46,10 +41,15 @@ namespace FinalDish.API.Controllers
 
             var result = await userManager.CreateAsync(user, data.Password);
 
-            if (result.Succeeded)
-                return StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
-            else
-                return Problem(string.Join(" ", result.Errors.Select(x => x.Description)), null, StatusCodes.Status500InternalServerError);
+            if (result.Succeeded) 
+            {
+                result = await userManager.AddToRoleAsync(user, data.Role);
+
+                if (result.Succeeded)
+                    return StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
+            }
+
+            return Problem(JoinErrors(result), null, StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost]
@@ -86,5 +86,8 @@ namespace FinalDish.API.Controllers
             else
                 return Problem("Login is failed. Check login and password", null, StatusCodes.Status400BadRequest);
         }
+
+        private string JoinErrors(IdentityResult result) => 
+            string.Join(" ", result.Errors.Select(x => x.Description));
     }
 }
