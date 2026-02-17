@@ -10,3 +10,11 @@ TODO:
 Main tasks:
 1. Users can create/modify/delete their own dishes.
 2. Users can use preinstalled dishes (readonly) as templates to create their own.  
+
+Guide:
+
+After app install do the following:
+1. Add roles (Moderator, Administrator)
+2. Add supervisors (Moderators, Administrators). 
+	Note: Both Administrator and Moderator roles should be assigned to Admin user.
+3. Assign roles to users
