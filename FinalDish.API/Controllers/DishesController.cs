@@ -10,7 +10,7 @@ namespace FinalDish.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class DishesController : ControllerBase
+    public class DishesController : IntermediateController
     {
         private readonly ApplicationDbContext context;
 
@@ -20,7 +20,7 @@ namespace FinalDish.API.Controllers
         }
 
         [HttpGet]
-        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)] // TODO: MaxAge300
         public async Task<IEnumerable<Dish>> Get([FromQuery] RangeRequestDTO data) 
         {
             return await context.Dishes
@@ -29,12 +29,16 @@ namespace FinalDish.API.Controllers
                 .ToArrayAsync();
         }
 
-        [Authorize]
+        [Authorize(Roles = RolesNames.Moderator)]
         [HttpPost]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Post(DishDTO data) 
         {
             try
             {
+                if (context.DishTypes.Find(data.DishTypeId) is null)
+                    return Error500($"Dish type with id = {data.DishTypeId} does not exist");
+                
                 var dish = new Dish 
                 {
                     Name = data.Name,
@@ -52,20 +56,20 @@ namespace FinalDish.API.Controllers
             }
             catch (Exception ex) 
             {
-                var details = new ProblemDetails();
-                details.Detail = ex.Message;
-                details.Status = StatusCodes.Status500InternalServerError;
-
-                return StatusCode(StatusCodes.Status500InternalServerError, details);
+                return Error500(ex.Message);
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = RolesNames.Moderator)]
         [HttpPut]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Put(int id, DishDTO data)
         {
             try
             {
+                if (context.DishTypes.Find(data.DishTypeId) is null)
+                    return Error500($"Dish type with id = {data.DishTypeId} does not exist");
+
                 var entity = await context.Dishes.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (entity is not null)
@@ -92,8 +96,9 @@ namespace FinalDish.API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = RolesNames.Admin)]
         [HttpDelete]
+        [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
         public async Task<IActionResult> Delete(int id) 
         {
             try
