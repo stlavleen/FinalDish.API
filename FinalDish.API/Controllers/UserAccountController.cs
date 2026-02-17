@@ -4,8 +4,8 @@ using FinalDish.API.DTO;
 using FinalDish.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -13,7 +13,7 @@ namespace FinalDish.API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class UserAccountController : ControllerBase
+    public class UserAccountController : IntermediateController
     {
         private readonly IConfiguration configuration;
         private readonly UserManager<AppUser> userManager;
@@ -28,12 +28,9 @@ namespace FinalDish.API.Controllers
 
         [HttpPost]
         [ResponseCache(CacheProfileName = CacheProfilesNames.NoStore)]
-        public async Task<IActionResult> Register(RegistrationDTO data) 
+        public async Task<IActionResult> Register(RegistrationDTO data)
         {
-            if (data.Role is not null && !RolesNames.Content.Contains(data.Role))
-                return Problem("User is not created. Unknown role.", null, StatusCodes.Status500InternalServerError);
-
-            var user = new AppUser 
+            var user = new AppUser
             {
                 UserName = data.Name,
                 Email = data.Email
@@ -41,21 +38,9 @@ namespace FinalDish.API.Controllers
 
             var userResult = await userManager.CreateAsync(user, data.Password);
 
-            if (!userResult.Succeeded)
-                return GenerateUserCreationFailedResponse(userResult);
-            else 
-            {
-                if (data.Role is null)
-                    return GenerateUserCreationSucceededResponse(user);
-                else
-                {
-                    var roleResult = await userManager.AddToRoleAsync(user, data.Role);
-
-                    return roleResult.Succeeded ?
-                        GenerateUserCreationSucceededResponse(user) :
-                        GenerateUserCreationFailedResponse(roleResult);
-                }
-            }
+            return userResult.Succeeded ?
+                Created(string.Empty, $"User {user.UserName} has been created.") :
+                Error500(userResult);
         }
 
         [HttpPost]
@@ -65,41 +50,46 @@ namespace FinalDish.API.Controllers
             var user = await userManager.FindByNameAsync(data.Name);
 
             if (user is null)
-                return Problem($"User with name = {data.Name} does not exist", null, StatusCodes.Status500InternalServerError);
+                return Error500($"User with name = {data.Name} does not exist");
 
             var passwordIsCorrect = await userManager.CheckPasswordAsync(user, data.Password);
 
-            if (passwordIsCorrect) 
-            {
-                var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]));
-                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var claims = new Claim[] 
+            if (!passwordIsCorrect)
+                return BadRequest("Login is failed. Check login and password");
+
+            var jwtString = await CreateJWTAsync(user);
+
+            return Ok(jwtString);
+        }
+
+        private async Task<string> CreateJWTAsync(AppUser user) 
+        {
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var roles = await userManager.GetRolesAsync(user);
+            var claims = CreateClaims(roles, user);
+            var jwt = new JwtSecurityToken(
+                configuration["JWT:Issuer"],
+                configuration["JWT:Audience"],
+                claims,
+                null,
+                DateTime.Now.AddSeconds(300),
+                credentials);
+
+            var jwtString = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            return jwtString;
+        }
+
+        private IEnumerable<Claim> CreateClaims(IList<string> roles, AppUser user) 
+        {
+            var claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name, user.UserName)
                 };
-                var jwt = new JwtSecurityToken(
-                    configuration["JWT:Issuer"], 
-                    configuration["JWT:Audience"], 
-                    claims, 
-                    null, 
-                    DateTime.Now.AddSeconds(300), 
-                    credentials);
+            claims.AddRange(roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
-                var jwtString = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                return StatusCode(StatusCodes.Status200OK, jwtString);
-            }  
-            else
-                return Problem("Login is failed. Check login and password", null, StatusCodes.Status400BadRequest);
+            return claims;
         }
-
-        private string JoinErrors(IdentityResult result) => 
-            string.Join(" ", result.Errors.Select(x => x.Description));
-
-        private ObjectResult GenerateUserCreationSucceededResponse(AppUser user) =>
-            StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
-
-        private ObjectResult GenerateUserCreationFailedResponse(IdentityResult result) =>
-            Problem(JoinErrors(result), null, StatusCodes.Status500InternalServerError);
     }
 }

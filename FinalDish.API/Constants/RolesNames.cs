@@ -12,5 +12,8 @@
         ];
 
         public static IEnumerable<string> Content => content;
+
+        public static bool IsValidRole(string role)
+            => content.Contains(role);
     }
 }
