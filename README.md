@@ -18,3 +18,4 @@ After app install do the following:
 2. Add supervisors (Moderators, Administrators). 
 	Note: Both Administrator and Moderator roles should be assigned to Admin user.
 3. Assign roles to users
+4. Add Dishes Types, Dishes, Ingredients, Dishes_Ingredients. (use script from Resources)
