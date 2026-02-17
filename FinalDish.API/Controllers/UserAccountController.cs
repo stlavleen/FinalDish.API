@@ -39,17 +39,23 @@ namespace FinalDish.API.Controllers
                 Email = data.Email
             };
 
-            var result = await userManager.CreateAsync(user, data.Password);
+            var userResult = await userManager.CreateAsync(user, data.Password);
 
-            if (result.Succeeded) 
+            if (!userResult.Succeeded)
+                return GenerateUserCreationFailedResponse(userResult);
+            else 
             {
-                result = await userManager.AddToRoleAsync(user, data.Role);
+                if (data.Role is null)
+                    return GenerateUserCreationSucceededResponse(user);
+                else
+                {
+                    var roleResult = await userManager.AddToRoleAsync(user, data.Role);
 
-                if (result.Succeeded)
-                    return StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
+                    return roleResult.Succeeded ?
+                        GenerateUserCreationSucceededResponse(user) :
+                        GenerateUserCreationFailedResponse(roleResult);
+                }
             }
-
-            return Problem(JoinErrors(result), null, StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost]
@@ -89,5 +95,11 @@ namespace FinalDish.API.Controllers
 
         private string JoinErrors(IdentityResult result) => 
             string.Join(" ", result.Errors.Select(x => x.Description));
+
+        private ObjectResult GenerateUserCreationSucceededResponse(AppUser user) =>
+            StatusCode(StatusCodes.Status201Created, $"User {user.UserName} has been created.");
+
+        private ObjectResult GenerateUserCreationFailedResponse(IdentityResult result) =>
+            Problem(JoinErrors(result), null, StatusCodes.Status500InternalServerError);
     }
 }
