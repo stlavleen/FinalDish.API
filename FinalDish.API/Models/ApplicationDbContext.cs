@@ -35,6 +35,12 @@ namespace FinalDish.API.Models
                 .WithOne(x => x.Type)
                 .HasForeignKey(x => x.DishTypeId)
                 .IsRequired();
+
+            modelBuilder.Entity<AppUser>()
+                .HasMany(x => x.Dishes)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId)
+                .IsRequired(false);
         }
 
         public DbSet<Dish> Dishes => Set<Dish>();

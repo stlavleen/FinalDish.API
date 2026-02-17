@@ -5,5 +5,6 @@ namespace FinalDish.API.Models
 {
     public class AppUser : IdentityUser
     {
+        public ICollection<Dish>? Dishes { get; set; }
     }
 }

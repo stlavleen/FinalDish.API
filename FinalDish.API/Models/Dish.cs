@@ -13,8 +13,10 @@ namespace FinalDish.API.Models
 
         [Required]
         public int DishTypeId { get; set; }
-
         public DishType? Type { get; set; }
+
+        public string? UserId { get; set; }
+        public AppUser? User { get; set; }
 
         public ICollection<Dishes_Ingredients>? Dishes_Ingredients { get; set; }
     }
