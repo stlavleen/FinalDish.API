@@ -1,0 +1,59 @@
+
+Registration:
+
+{
+  "name": "RegularUser1",
+  "email": "regularuser@example.com",
+  "password": "P@ssw0rd123"
+}
+
+{
+  "name": "ModeratorUser1",
+  "email": "moderatoruser@example.com",
+  "password": "P@ssw0rd123"
+}
+
+{
+  "name": "AdministratorUser1",
+  "email": "administratoruser@example.com",
+  "password": "P@ssw0rd123"
+}
+
+Roles:
+	Moderator
+	Administrator
+
+UserRoles:
+
+{
+  "userName": "ModeratorUser1",
+  "roleName": "Moderator"
+}
+
+{
+  "userName": "AdministratorUser1",
+  "roleName": "Moderator"
+}
+
+{
+  "userName": "AdministratorUser1",
+  "roleName": "Administrator"
+}
+
+
+Login:
+
+{
+  "name": "RegularUser1",
+  "password": "P@ssw0rd123"
+}
+
+{
+  "name": "ModeratorUser1",
+  "password": "P@ssw0rd123"
+}
+
+{
+  "name": "AdministratorUser1",
+  "password": "P@ssw0rd123"
+}
