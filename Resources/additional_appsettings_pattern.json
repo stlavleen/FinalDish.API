@@ -1,0 +1,8 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Val"
+  },
+  "JWT": {
+    "SigningKey": "Val"
+  }
+}
