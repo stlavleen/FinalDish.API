@@ -1,11 +1,13 @@
 ﻿
 using FinalDish.API.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalDish.API.Controllers
 {
+    [Authorize(Roles = RolesNames.Admin)]
     [Route("[controller]")]
     [ApiController]
     public class RoleController : IntermediateController

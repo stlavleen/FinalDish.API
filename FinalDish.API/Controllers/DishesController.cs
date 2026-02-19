@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace FinalDish.API.Controllers
 {
@@ -175,27 +174,6 @@ namespace FinalDish.API.Controllers
             {
                 return Error500(ex.Message);
             }
-        }
-
-        private bool IsAuthorizedRequest(AppUser? user)
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            return IsSupervisorRole(identity) || IsNameMatch(user, identity);
-        }
-
-        private bool IsSupervisorRole(ClaimsIdentity? identity) 
-        {
-            var roles = identity?.FindAll(ClaimTypes.Role)?.Select(x => x.Value);
-
-            return roles is not null && roles.Count() > 0 && roles.Contains(RolesNames.Moderator);
-        }
-
-        private bool IsNameMatch(AppUser? user, ClaimsIdentity? identity) 
-        {
-            var userName = user?.UserName;
-            var nameFromIdentity = identity?.FindFirst(ClaimTypes.Name)?.Value;
-
-            return userName == nameFromIdentity && userName is not null;
         }
     }
 }
