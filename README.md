@@ -9,17 +9,9 @@ Guide:
 
 After API install (placed release build in some directory) do the following:
 
-Config:
 1. Add secret data to appsettings.json (use Resources/additional_appsettings_pattern.json and replace "Val" by your own values).
-
-Identity (see Resources/IdentityTestData.txt as example):
-2. Add roles (Moderator, Administrator).
-3. Add supervisors (Moderators, Administrators). 
-Note: Both Administrator and Moderator roles should be assigned to Admin user.
+2. Add roles: Moderator, Administrator (see Resources/IdentityTestData.txt as example).
+3. Add supervisors (Moderators, Administrators users). Note: Both Administrator and Moderator roles should be assigned to Admin user.
 4. Assign roles to users
-
-Dishes (use script Resources/FinalDish.sql):
-5. Add Dishes Types, Dishes, Ingredients, Dishes_Ingredients. 
-
-Deploy:
+5. Add Dishes Types, Dishes, Ingredients, Dishes_Ingredients (use script Resources/FinalDish.sql. 
 6. Host API in IIS or Nginx
